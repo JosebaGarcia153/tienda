@@ -11,64 +11,61 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import com.ipartek.formacion.modelo.dao.impl.FabricanteDAOImpl;
-import com.ipartek.formacion.modelo.dao.impl.ProductoDAOImpl;
-import com.ipartek.formacion.modelo.pojo.FormularioBusqueda;
-import com.ipartek.formacion.modelo.pojo.Producto;
-
+//import com.ipartek.formacion.modelo.dao.impl.DepartamentoDAOImpl;
+import com.ipartek.formacion.modelo.dao.impl.EmpleadoDAOImpl;
+import com.ipartek.formacion.modelo.pojo.Departamento;
+import com.ipartek.formacion.modelo.pojo.Empleado;
 
 
 /**
  * Servlet implementation class InicioController
  */
-@WebServlet("/buscar")
+@WebServlet("/inicio")
 public class InicioController extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger LOG = Logger.getLogger(InicioController.class);
-	private final static ProductoDAOImpl dao = ProductoDAOImpl.getInstance();
-	private final static FabricanteDAOImpl daof = FabricanteDAOImpl.getInstance();
+	private final static EmpleadoDAOImpl dao = EmpleadoDAOImpl.getInstance();
+	//private final static DepartamentoDAOImpl daod = DepartamentoDAOImpl.getInstance();
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		String nombre = request.getParameter("nombre");
-		String pmin = request.getParameter("pmin");
-		String pmax = request.getParameter("pmax");
-		String fabricante = request.getParameter("fabricante");
-
-		ArrayList<Producto> productos = new ArrayList<Producto>();
-		FormularioBusqueda form = new FormularioBusqueda();
-
+		String apellido1 = request.getParameter("ape1");
+		String apellido2 = request.getParameter("ape2");
+		String cif = request.getParameter("cif");
+		
+		ArrayList<Empleado> busquedaEmpl = new ArrayList<Empleado>();
+		
+		
 		try {
-
 			LOG.trace("Entramos al controlador /inicio ");
-
-			form = new FormularioBusqueda(nombre, pmin, pmax, fabricante);
-
-			LOG.debug(String.format("filtro busqueda nombre=%s precioMinimo=%s precioMAximo=%s fabricante=%s", nombre,
-					pmin, pmax, fabricante));
-
-			productos = dao.buscar(form.getNombre(), form.getPrecioMin(), form.getPrecioMax(), form.getIdFabricante());
+			
+			LOG.debug(String.format("filtro busqueda nombre=%s apellido1=%s apellido2=%s cif=%s", nombre, apellido1, apellido2, cif));
+			
+			busquedaEmpl = dao.buscar(nombre, apellido1, apellido2, cif);
 
 		} catch (Exception e) {
 
 			LOG.error(e);
 
 		} finally {
-			request.setAttribute("fabricantes", daof.getAll());
-			request.setAttribute("formulario", form);
-			request.setAttribute("productos", productos);
-
-			gestionBotonPrecio(request, form);
-
-			request.getRequestDispatcher("index.jsp").forward(request, response);
+			
+			if (busquedaEmpl.isEmpty()) {
+				
+				request.setAttribute("empleados", dao.getAll());
+				request.getRequestDispatcher("index.jsp").forward(request, response);
+				
+			} else {
+				
+				request.setAttribute("busquedaEmpl", busquedaEmpl);
+				response.sendRedirect("index.jsp");
+			}
 		}
-
 	}
 
 	/**
@@ -76,39 +73,45 @@ public class InicioController extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-
-	/**
-	 * Guarda 3 atributos en la request para usarlos en la vista y gestionar el boton de Precio:
-	 * 
-	 * <dl>
-	 *  <dt>claseBtnPrecio:</dt> <dd>btn-primary o btn-outline-primary, si esta activado el filtro o no</dd>
-	 *  <dt>textoBtnPrecio:</dt> <dd>texto a mostrar dentro del boton</dd>
-	 *  <dt>btnPrecioShow:</dt>  <dd>true para mostrar boton de reset, false en caso contrario</dd>
-	 * </dl> 
-	 * 
-	 * @param request FormularioBusqueda
-	 * @param form    FormularioBusqueda
-	 */
-	private void gestionBotonPrecio(HttpServletRequest request, FormularioBusqueda form) {
 		
-		String claseBtnPrecio = "btn-primary";
-		String textoBtnPrecio = "Precio desde " + form.getPrecioMin() + " hasta " + form.getPrecioMax();
-		boolean btnPrecioShow = true;
+		Empleado empleado = new Empleado();
 		
+		int id = 0;
+		int idDept = 0;
 		
-		if ( form.getPrecioMin() == 0 && form.getPrecioMax() == 0 ) {
+		try {
 			
-			claseBtnPrecio = "btn-outline-primary";
-			textoBtnPrecio = "Precio";
-			btnPrecioShow = false;
+			String idParam = request.getParameter("id");
+			String nombreParam = request.getParameter("nombre");
+			String ape1Param = request.getParameter("ape1");
+			String ape2Param = request.getParameter("ape2");
+			String cifParam = request.getParameter("cif");
+			String idDeptParam = request.getParameter("id_departamento");
+								
+			id = Integer.parseInt(idParam);
+			idDept = Integer.parseInt(idDeptParam);
+			
+			
+			empleado.setId(id);
+			empleado.setNombre(nombreParam);
+			empleado.setApe1(ape1Param);			
+			empleado.setApe2(ape2Param);
+			empleado.setCif(cifParam);
+
+			
+			Departamento d = new Departamento();
+			d.setId(idDept);
+			empleado.setDepartamento(d);
+			
+			//dao.crear(empleado);
+		} catch (Exception e) {
+
+			request.getRequestDispatcher("index.jsp").forward(request, response);
+			
+		} finally {
+			
+			request.setAttribute("empleados", dao.getAll());
+			response.sendRedirect("index.jsp");
 		}
-		
-		request.setAttribute("claseBtnPrecio", claseBtnPrecio);
-		request.setAttribute("textoBtnPrecio", textoBtnPrecio);
-		request.setAttribute("btnPrecioShow", btnPrecioShow);
-
 	}
-
 }

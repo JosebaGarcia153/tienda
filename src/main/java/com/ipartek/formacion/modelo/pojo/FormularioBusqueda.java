@@ -2,25 +2,25 @@ package com.ipartek.formacion.modelo.pojo;
 
 public class FormularioBusqueda {
 	private String nombre;
-	private float precioMin;
-	private float precioMax;
-	private int idFabricante;
+	private String ape1;
+	private String ape2;
+	private String cif;
 	
 	
 	public FormularioBusqueda() {
 		super();
 		this.nombre = "";
-		this.precioMin = 0;
-		this.precioMax = 0;
-		this.idFabricante = 0;
+		this.ape1 = "";
+		this.ape2 = "";
+		this.cif = "";
 	}
 
-	public FormularioBusqueda(String nombre, String precioMin, String precioMax, String idFabricante) {
+	public FormularioBusqueda(String nombre, String ape1, String ape2, String cif) {
 		super();
 		this.setNombre(nombre);
-		this.setPrecioMin(precioMin);
-		this.setPrecioMax(precioMax);
-		this.setIdFabricante(idFabricante);
+		this.setApe1(ape1);
+		this.setApe2(ape2);
+		this.setCif(cif);
 	}
 
 
@@ -36,67 +36,47 @@ public class FormularioBusqueda {
 		}
 	}
 
+	public String getApe1() {
+		return ape1;
+	}
 
-	public float getPrecioMin() {
-		return precioMin;
-	}
-	
-	public void setPrecioMin(Float precioMin) {
-		this.precioMin = precioMin;
-	}
-	
-	public void setPrecioMin(String precioMin) {
-		if (precioMin == null) {
-			this.precioMin = 0;
-		} else if ("".equals(precioMin)) {
-			this.precioMin = 0;
+	public void setApe1(String ape1) {
+		if(ape1 == null) {
+			this.ape1 = "";
 		} else {
-			this.precioMin = Float.parseFloat(precioMin);
+			this.ape1 = ape1.trim();
 		}
 	}
-
-
-	public float getPrecioMax() {
-		return precioMax;
-	}
 	
-	public void setPrecioMax(Float precioMax) {
-		this.precioMax = precioMax;
-	}
 	
-	public void setPrecioMax(String precioMax) {
-		if (precioMax == null) {
-			this.precioMax = 0;
-		} else if ("".equals(precioMax)) {
-			this.precioMax = 0;
+	public String getApe2() {
+		return ape2;
+	}
+
+	public void setApe2(String ape2) {
+		if(ape2 == null) {
+			this.ape2 = "";
 		} else {
-			this.precioMax = Float.parseFloat(precioMax);
+			this.ape2 = ape2.trim();
 		}
 	}
-
-
-	public int getIdFabricante() {
-		return idFabricante;
-	}
-
-	public void setIdFabricante(int idFabricante) {
-		this.idFabricante = idFabricante;
-	}
 	
-	public void setIdFabricante(String idFabricante) {
-		if (idFabricante == null) {
-			this.idFabricante = 0;
-		} else if ("".equals(idFabricante)) {
-			this.idFabricante = 0;
+	
+	public String getCif() {
+		return cif;
+	}
+
+	public void setCif(String cif) {
+		if(ape1 == null) {
+			this.cif = "";
 		} else {
-			this.idFabricante = Integer.parseInt(idFabricante);
+			this.cif = cif.trim();
 		}
 	}
-
-
+	
+	
 	@Override
 	public String toString() {
-		return "FormularioBusqueda [nombre=" + nombre + ", precioMin=" + precioMin + ", precioMax=" + precioMax
-				+ ", idFabricante=" + idFabricante + "]";
+		return "FormularioBusqueda [nombre=" + nombre + ", ape1=" + ape1 + ", ape2=" + ape2 + ", cif=" + cif + "]";
 	}
 }
